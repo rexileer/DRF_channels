@@ -23,4 +23,42 @@
         </div>
     </div>
 </div>
+<script>
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatContainer = document.getElementById('chat-container');
+
+    chatForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const userMessage = chatInput.value;
+        if (!userMessage) return;
+
+        // Добавляем сообщение пользователя в чат
+        const userMessageHtml = `<div class="text-end"><strong>You:</strong> ${userMessage}</div>`;
+        chatContainer.innerHTML += userMessageHtml;
+
+        // Отправляем запрос на сервер
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            });
+            const data = await response.json();
+
+            // Добавляем ответ от API в чат
+            const responseHtml = `<div class="text-start"><strong>LLM:</strong> ${data.response}</div>`;
+            chatContainer.innerHTML += responseHtml;
+        } catch (error) {
+            chatContainer.innerHTML += `<div class="text-danger"><strong>Error:</strong> Failed to send message.</div>`;
+        }
+
+        // Прокручиваем чат вниз и очищаем ввод
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatInput.value = '';
+    });
+</script>
 {% endblock %}
