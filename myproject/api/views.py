@@ -4,6 +4,8 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializers import ChatMessageSerializer
+from core.models import ChatMessage
+
 
 
 @api_view(['GET'])
@@ -38,5 +40,11 @@ class ChatAPIView(APIView):
             user_message = serializer.validated_data['message']
             # Логика обработки сообщения (пока эхо-ответ)
             response_message = f"Echo: {user_message}"
+            
+            ChatMessage.objects.create(
+                user_message=user_message,
+                llm_response=response_message
+            )
+
             return Response({"message": user_message, "response": response_message}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
