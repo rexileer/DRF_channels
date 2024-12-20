@@ -11,4 +11,5 @@ urlpatterns = [
     path('simple-endpoint/', views.simple_view, name='simple_endpoint'),
     path('chat/', views.ChatAPIView.as_view(), name='chat_api'),
     path('chat/history/', views.ChatHistoryAPIView.as_view(), name='chat_history'),
+    path('chat/clear/', views.ClearChatAPIView.as_view(), name='chat_clear'),
 ]

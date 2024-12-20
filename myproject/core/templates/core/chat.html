@@ -20,6 +20,7 @@
                 <input type="text" class="form-control me-2" id="chat-input" placeholder="Type a message..." aria-label="Chat">
                 <button type="submit" class="btn btn-primary">Send</button>
             </form>
+            <button id="clear-chat" class="btn btn-danger">Clear Chat</button>
         </div>
     </div>
 </div>
@@ -72,9 +73,27 @@
             });
             
             // Прокрутка чата вниз
-            chatContainer.scrollTop = chatBox.scrollHeight;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         } catch (error) {
             chatContainer.innerHTML += `<div class="text-danger"><strong>Error:</strong> Failed to load chat history.</div>`;
+        }
+    });
+    const clearChatButton = document.getElementById('clear-chat');
+
+    clearChatButton.addEventListener('click', async () => {
+        if (!confirm("Are you sure you want to clear the chat?")) return;
+
+        try {
+            const response = await fetch('/api/chat/clear/', {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                chatContainer.innerHTML = `<p class="text-muted text-center">No messages yet. Start the conversation!</p>`;
+            } else {
+                chatContainer.innerHTML += `<div class="text-danger"><strong>Error:</strong> Failed to clear chat.</div>`;
+            }
+        } catch (error) {
+            chatContainer.innerHTML += `<div class="text-danger"><strong>Error:</strong> Failed to clear chat.</div>`;
         }
     });
 </script>

@@ -58,3 +58,12 @@ class ChatHistoryAPIView(ListAPIView):
     """
     queryset = ChatMessage.objects.all().order_by('-created_at')
     serializer_class = ChatHistorySerializer
+
+
+class ClearChatAPIView(APIView):
+    """
+    API для очистки истории чата.
+    """
+    def delete(self, request, *args, **kwargs):
+        ChatMessage.objects.all().delete()  # Удаляем все сообщения
+        return Response({"message": "Chat history cleared."}, status=status.HTTP_200_OK)
