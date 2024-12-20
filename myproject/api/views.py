@@ -46,5 +46,5 @@ class ChatAPIView(APIView):
                 llm_response=response_message
             )
 
-            return Response({"message": user_message, "response": response_message}, status=status.HTTP_200_OK)
+            return Response({"user_message": user_message, "llm_response": response_message}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
