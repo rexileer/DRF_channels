@@ -56,7 +56,7 @@ class ChatHistoryAPIView(ListAPIView):
     """
     API для получения истории чата.
     """
-    queryset = ChatMessage.objects.all().order_by('-created_at')
+    queryset = ChatMessage.objects.all().order_by('created_at')
     serializer_class = ChatHistorySerializer
 
 
