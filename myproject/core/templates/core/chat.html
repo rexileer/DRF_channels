@@ -60,5 +60,22 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
         chatInput.value = '';
     });
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/chat/history/');
+            const data = await response.json();
+            
+            data.forEach(message => {
+                const userMessageHtml = `<div class="text-end"><strong>You:</strong> ${message.user_message}</div>`;
+                const responseHtml = `<div class="text-start"><strong>LLM:</strong> ${message.llm_response}</div>`;
+                chatContainer.innerHTML += userMessageHtml + responseHtml;
+            });
+            
+            // Прокрутка чата вниз
+            chatContainer.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            chatContainer.innerHTML += `<div class="text-danger"><strong>Error:</strong> Failed to load chat history.</div>`;
+        }
+    });
 </script>
 {% endblock %}

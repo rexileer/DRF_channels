@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from .serializers import ChatMessageSerializer
 from core.models import ChatMessage
+from rest_framework.generics import ListAPIView
+from .serializers import ChatHistorySerializer
 
 
 
@@ -46,5 +48,13 @@ class ChatAPIView(APIView):
                 llm_response=response_message
             )
 
-            return Response({"user_message": user_message, "llm_response": response_message}, status=status.HTTP_200_OK)
+            return Response({"message": user_message, "response": response_message}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChatHistoryAPIView(ListAPIView):
+    """
+    API для получения истории чата.
+    """
+    queryset = ChatMessage.objects.all().order_by('-created_at')
+    serializer_class = ChatHistorySerializer
