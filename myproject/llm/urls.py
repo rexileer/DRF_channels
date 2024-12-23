@@ -1,8 +1,6 @@
 from django.urls import path
-
-from . import views
-
+from .views import LLMChatAPIView
 
 urlpatterns = [
-    path('response/', views.llm_response, name='llm_response'),
+    path("chat/", LLMChatAPIView.as_view(), name="llm-chat"),
 ]
