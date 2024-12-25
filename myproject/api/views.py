@@ -7,6 +7,7 @@ from .serializers import ChatMessageSerializer
 from core.models import ChatMessage
 from rest_framework.generics import ListAPIView
 from .serializers import ChatHistorySerializer
+from llm.llm_logic import process_message
 
 
 
@@ -34,21 +35,35 @@ class ExampleViewSet(ViewSet):
 
 class ChatAPIView(APIView):
     """
-    Эхо-чат API
+    Чат API с интеграцией LLM
     """
+
     def post(self, request, *args, **kwargs):
         serializer = ChatMessageSerializer(data=request.data)
         if serializer.is_valid():
             user_message = serializer.validated_data['message']
-            # Логика обработки сообщения (пока эхо-ответ)
-            response_message = f"Echo: {user_message}"
             
+            # Извлечение истории чата
+            dialog_history = [
+                {"role": "user", "content": msg.user_message} if msg.user_message else
+                {"role": "assistant", "content": msg.llm_response}
+                for msg in ChatMessage.objects.all().order_by("created_at")
+            ]
+
+            # Генерация ответа через LLM
+            response_message = process_message(user_message, dialog_history)
+            
+            # Сохранение сообщения и ответа в БД
             ChatMessage.objects.create(
                 user_message=user_message,
                 llm_response=response_message
             )
 
-            return Response({"message": user_message, "response": response_message}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": user_message, "response": response_message},
+                status=status.HTTP_200_OK
+            )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
