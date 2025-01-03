@@ -1,16 +1,18 @@
 import asyncio
+import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
 
 from handlers import bot_messages
 
+from dotenv import load_dotenv
 
-API_TOKEN = 'TOKEN'
-API_SERVICE_URL = 'http://127.0.0.1:8000/api/chat/llm/'
+
+load_dotenv()
 
 async def main():
-    bot = Bot(API_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
+    bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode='HTML'))
     dp = Dispatcher()
     
     dp.include_routers(
