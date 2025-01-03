@@ -4,7 +4,7 @@ import requests
 from aiogram import types
 
 
-API_SERVICE_URL = 'http://127.0.0.1:8000/api/chat/llm/'
+API_SERVICE_URL = 'http://127.0.0.1:8000/api/chat/'
 
 # Логирование
 logging.basicConfig(level=logging.INFO)
@@ -27,6 +27,7 @@ async def chat_with_llm(message: types.Message):
     try:
         # Отправка запроса на API
         response = requests.post(API_SERVICE_URL, json={"message": user_message})
+        response.raise_for_status()  # Генерирует исключение при HTTP-ошибке
         response_data = response.json()
 
         if response.status_code == 200:
@@ -35,6 +36,9 @@ async def chat_with_llm(message: types.Message):
         else:
             await message.answer(f"Ошибка: {response_data.get('error', 'Неизвестная ошибка')}")
 
-    except Exception as e:
-        logger.error(f"Ошибка при взаимодействии с API: {e}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"API request failed: {e}")
+        await message.answer("Произошла ошибка при обработке вашего сообщения.")
+    except ValueError as ve:
+        logging.error(f"Invalid JSON response: {response.text}")
         await message.answer("Произошла ошибка при обработке вашего сообщения.")
